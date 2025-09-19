@@ -1,0 +1,21 @@
+.order-book-item {
+  display: flex;
+}
+
+
+.order-book-item-cell {
+  color: var(--btse-quote-table-header-text-color, #8698aa);
+  font-size: 12px;
+}
+
+.order-book-item-price {
+  flex: 1 0 29%;
+}
+
+.order-book-item-size {
+  flex: 1 0 30%;
+}
+
+.order-book-item-total {
+  flex: 1 1 41%;
+}

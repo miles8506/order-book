@@ -1,0 +1,5 @@
+enum CONTRACT_SYMBOL {
+  BTCPFC = 'BTCPFC',
+}
+
+export { CONTRACT_SYMBOL }
