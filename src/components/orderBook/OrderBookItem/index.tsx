@@ -6,30 +6,20 @@ interface IOrderBookItemProps {
   total: number
   price: string
   size: string
-  unique: number
 }
 
-export default function OrderBookItem({ total, price, size, unique }: IOrderBookItemProps) {
+export default function OrderBookItem({ total, price, size }: IOrderBookItemProps) {
   return (
     <div className={styled['order-book-item']}>
-      <div
-        className={clsx([styled['order-book-item-cell'], styled['order-book-item-price']])}
-        key={price + unique}
-      >
+      <span className={clsx([styled['order-book-item-cell'], styled['order-book-item-price']])}>
         {price}
-      </div>
-      <div
-        className={clsx([styled['order-book-item-cell'], styled['order-book-item-size']])}
-        key={size + unique}
-      >
+      </span>
+      <span className={clsx([styled['order-book-item-cell'], styled['order-book-item-size']])}>
         {size}
-      </div>
-      <div
-        className={clsx([styled['order-book-item-cell'], styled['order-book-item-total']])}
-        key={total + unique}
-      >
+      </span>
+      <span className={clsx([styled['order-book-item-cell'], styled['order-book-item-total']])}>
         {total}
-      </div>
+      </span>
     </div>
   )
 }

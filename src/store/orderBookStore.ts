@@ -18,7 +18,7 @@ export interface ILastPriceState {
   size: number | null
   price: number | null
   tradeId: number | null
-  timestamp: number | null // Unix timestamp (ms)
+  timestamp: number | null
 }
 
 interface IOrderBookActions {

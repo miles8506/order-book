@@ -5,15 +5,15 @@ import clsx from 'clsx'
 export default function OrderBookHeader() {
   return (
     <div className={styled['order-book-header']}>
-      <div className={clsx(styled['order-book-header-cell'], styled['order-book-header-price'])}>
+      <span className={clsx(styled['order-book-header-cell'], styled['order-book-header-price'])}>
         Price (USD)
-      </div>
-      <div className={clsx(styled['order-book-header-cell'], styled['order-book-header-size'])}>
+      </span>
+      <span className={clsx(styled['order-book-header-cell'], styled['order-book-header-size'])}>
         Size
-      </div>
-      <div className={clsx(styled['order-book-header-cell'], styled['order-book-header-total'])}>
+      </span>
+      <span className={clsx(styled['order-book-header-cell'], styled['order-book-header-total'])}>
         Total
-      </div>
+      </span>
     </div>
   )
 }

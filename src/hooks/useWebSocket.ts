@@ -36,9 +36,6 @@ export function useWebSocket<T>({
       // TODO
       if ((parseData as unknown as any).event === 'subscribe') return
 
-      // console.log('curr:', parseData.data.prevSeqNum);
-      // console.log('prev:', prevData.current?.data?.seqNum);
-
       onmessage({ ev, parseData, ...(cachePrevData ? { prevData: prevData.current } : {}) })
       prevData.current = cachePrevData ? parseData : null
     }

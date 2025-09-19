@@ -1,26 +1,27 @@
-import React, { useEffect, type PropsWithChildren } from 'react'
-import OrderBookHeader from './OrderBookHeader'
+import React, { useEffect, useMemo } from 'react'
 import { useOrderBookStore } from '@/store'
-import { formatOrderBookList } from '@/utils'
+import { formatOrderBook } from '@/utils'
 import OrderBookItem from './OrderBookItem'
+import { ORDER_BOOK_TYPE } from '@/constants'
 
 interface IOrderBookProps {
-  type: 'bids' | 'asks'
+  type: ORDER_BOOK_TYPE
 }
 
-export default function OrderBook({ type, children }: PropsWithChildren<IOrderBookProps>) {
-  const { state: { orderBook } = {} } = useOrderBookStore()
-  const data = formatOrderBookList(orderBook?.[type] ?? [], orderBook?.seqNum ?? 0, type)
+export default function OrderBook({ type }: IOrderBookProps) {
+  const { state: { orderBook = { asks: [], bids: [] } } = {} } = useOrderBookStore()
+  const orderBookList = useMemo(
+    () => formatOrderBook(orderBook[type], type),
+    [orderBook[type], type],
+  )
 
   useEffect(() => {
-    console.log(data)
-    // if (data.length !== 8) console.log('error:', data.length)
-  }, [data])
+    console.log(orderBookList)
+  }, [orderBookList])
 
   return (
     <>
-      {children}
-      {data.map((item, index) => (
+      {orderBookList.map((item, index) => (
         <OrderBookItem {...item} key={index} />
       ))}
     </>

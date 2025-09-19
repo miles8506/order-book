@@ -4,7 +4,7 @@ interface ILastPrice {
   size: number
   price: number
   tradeId: number
-  timestamp: number // Unix timestamp (ms)
+  timestamp: number
 }
 
 interface ILastPriceRes {

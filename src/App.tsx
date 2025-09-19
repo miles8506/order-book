@@ -1,5 +1,6 @@
 import OrderBook from './components/orderBook'
 import OrderBookHeader from './components/orderBook/OrderBookHeader'
+import { ORDER_BOOK_TYPE } from './constants'
 import { useLastPriceStream, useUpdatePriceStream } from './hooks'
 import styled from '@/style/app.module.css'
 
@@ -11,9 +12,8 @@ function App() {
     <div className={styled.container}>
       <div className={styled.title}>Order Book</div>
       <div className={styled.wrapper}>
-        <OrderBook type="asks">
-          <OrderBookHeader />
-        </OrderBook>
+        <OrderBookHeader />
+        <OrderBook type={ORDER_BOOK_TYPE.BIDS} />
       </div>
     </div>
   )
