@@ -1,19 +1,19 @@
 import { CONTRACT_SYMBOL, WS_URL } from '@/constants'
 import { useWebSocket } from './useWebSocket'
-import type { IUpdatePriceRes } from '@/types'
-import { isNotNil } from 'ramda'
-import { updateOrderBookTop } from '@/utils'
+import type { IUpdatePriceData, IUpdatePriceRes } from '@/types'
+import { isNil, isNotNil } from 'ramda'
+import { updateOrderBookTop, useThrottle } from '@/utils'
 import { useOrderBookStore } from '@/store'
-import { startTransition, useRef } from 'react'
+import { startTransition, useEffect, useRef } from 'react'
 
 function useUpdatePriceStream() {
   const {
     actions: { setOrderBookState },
   } = useOrderBookStore()
-  // TODO
-  // const { value, update } = useThrottle<IUpdatePriceData>({
-  //   intervalMs: 20,
-  // })
+
+  const { value, update } = useThrottle<IUpdatePriceData>({
+    intervalMs: 50,
+  })
   const isDelta = useRef(false)
 
   const { subscribe, unsubscribe } = useWebSocket<IUpdatePriceRes>({
@@ -36,19 +36,36 @@ function useUpdatePriceStream() {
         return
       }
 
-      startTransition(() => {
-        setOrderBookState({
-          ...data,
-          bids: isDelta.current
-            ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.bids, data.bids)
-            : data.bids,
-          asks: isDelta
-            ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.asks, data.asks)
-            : data.asks,
-        })
-      })
+      // startTransition(() => {
+      //   setOrderBookState({
+      //     ...data,
+      //     bids: isDelta.current
+      //       ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.bids, data.bids)
+      //       : data.bids,
+      //     asks: isDelta
+      //       ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.asks, data.asks)
+      //       : data.asks,
+      //   })
+      // })
+
+      update(data)
     },
   })
+
+  useEffect(() => {
+    if (isNil(value)) return
+    startTransition(() => {
+      setOrderBookState({
+        ...value,
+        bids: isDelta.current
+          ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.bids, value.bids)
+          : value.bids,
+        asks: isDelta
+          ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.asks, value.asks)
+          : value.asks,
+      })
+    })
+  }, [value])
 }
 
 export { useUpdatePriceStream }

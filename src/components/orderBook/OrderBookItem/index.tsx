@@ -41,7 +41,7 @@ export default function OrderBookItem({
       newOrderTimeoutRef.current && clearTimeout(newOrderTimeoutRef.current)
       newOrderTimeoutRef.current = setTimeout(() => {
         setIsNewOrder(false)
-      }, 50)
+      }, 100)
     }
   }, [prevOrderPriceMap])
 
@@ -63,7 +63,7 @@ export default function OrderBookItem({
       sizeIncreasedTimeoutRef.current && clearTimeout(sizeIncreasedTimeoutRef.current)
       sizeIncreasedTimeoutRef.current = setTimeout(() => {
         setIsSizeIncreased(null)
-      }, 50)
+      }, 100)
     } else {
       setIsSizeIncreased(null)
     }
