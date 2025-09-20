@@ -1,4 +1,6 @@
+import type { IPrevOrderPriceMap } from '@/components/orderBook'
 import { ORDER_BOOK_TYPE } from '@/constants'
+import { isNil } from 'ramda'
 
 function updateOrderBookTop(prevData: Array<[string, string]>, currData: Array<[string, string]>) {
   const map = new Map([...prevData, ...currData])
@@ -25,4 +27,34 @@ function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, m
   }))
 }
 
-export { updateOrderBookTop, calculateTotal, formatOrderBook }
+function compareSizeChange(oldSize: number, newSize: number) {
+  if (newSize > oldSize) return true
+  if (newSize < oldSize) return false
+  return null
+}
+
+function formatPriceStatus(
+  prevOrderPriceMap: Map<number, IPrevOrderPriceMap> | null,
+  currOrderPriceList: {
+    price: number
+    size: number
+    total: number
+  }[],
+) {
+  return isNil(prevOrderPriceMap)
+    ? currOrderPriceList.map(item => ({ ...item, isNew: false, isIncreased: null }))
+    : currOrderPriceList.map(item => {
+        const isNew = !prevOrderPriceMap.has(item.price)
+        const isIncreased = isNew
+          ? null
+          : compareSizeChange(prevOrderPriceMap.get(item.price)!.size, item.size)
+
+        return {
+          ...item,
+          isNew,
+          isIncreased,
+        }
+      })
+}
+
+export { updateOrderBookTop, calculateTotal, formatOrderBook, formatPriceStatus }

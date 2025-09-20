@@ -12,7 +12,7 @@ function useUpdatePriceStream() {
   } = useOrderBookStore()
 
   const { value, update } = useThrottle<IUpdatePriceData>({
-    intervalMs: 50,
+    intervalMs: 30,
   })
   const isDelta = useRef(false)
 
@@ -35,18 +35,6 @@ function useUpdatePriceStream() {
         subscribe()
         return
       }
-
-      // startTransition(() => {
-      //   setOrderBookState({
-      //     ...data,
-      //     bids: isDelta.current
-      //       ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.bids, data.bids)
-      //       : data.bids,
-      //     asks: isDelta
-      //       ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.asks, data.asks)
-      //       : data.asks,
-      //   })
-      // })
 
       update(data)
     },

@@ -1,7 +1,7 @@
 .order-book-item {
   display: flex;
   padding: 1px 12px;
-  transition: all .1s ease;
+  transition: all .25s ease;
 }
 
 .order-book-item:hover {
@@ -41,7 +41,7 @@
   flex: 1 0 30%;
   color: var(--base-font-color, #fff);
   text-align: right;
-  /* transition: all .1s ease; */
+  transition: all .15s ease;
   background-color: transparent;
 }
 

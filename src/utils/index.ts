@@ -1,5 +1,9 @@
 export { stringify, parse } from './jsonUtils'
-export { formatOrderBookList } from './formatOrderBookList'
 export { useThrottle } from './useThrottle'
-export { updateOrderBookTop, calculateTotal, formatOrderBook } from './formatOrderBook'
+export {
+  updateOrderBookTop,
+  calculateTotal,
+  formatOrderBook,
+  formatPriceStatus,
+} from './formatOrderBook'
 export { numberFormatter } from './numberFormatter'
