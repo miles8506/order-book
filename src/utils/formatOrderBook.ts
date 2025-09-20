@@ -18,13 +18,22 @@ function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, m
   const sliceOrderBook =
     type === ORDER_BOOK_TYPE.BIDS ? data.slice(0, maxCount) : data.slice(-maxCount)
 
-  return sliceOrderBook.map(([price, size], index, arr) => ({
-    price: Number(price),
-    size: Number(size),
-    total: calculateTotal(
-      type === ORDER_BOOK_TYPE.BIDS ? arr.slice(0, index + 1) : arr.slice(index),
-    ),
-  }))
+  const totals = sliceOrderBook.map(([], index, arr) =>
+    type === ORDER_BOOK_TYPE.BIDS
+      ? arr.slice(0, index + 1).reduce((prev, [_, size]) => prev + Number(size), 0)
+      : arr.slice(index).reduce((prev, [_, size]) => prev + Number(size), 0),
+  )
+  const maxTotal = Math.max(...totals)
+
+  return sliceOrderBook.map(([price, size], index, arr) => {
+    const total = totals[index]
+    return {
+      price: Number(price),
+      size: Number(size),
+      total,
+      percent: maxTotal > 0 ? (total / maxTotal) * 100 : 0,
+    }
+  })
 }
 
 function compareSizeChange(oldSize: number, newSize: number) {
@@ -39,6 +48,7 @@ function formatPriceStatus(
     price: number
     size: number
     total: number
+    percent: number
   }[],
 ) {
   return isNil(prevOrderPriceMap)

@@ -11,6 +11,7 @@ interface IOrderBookItemProps {
   type: ORDER_BOOK_TYPE
   isNew: boolean
   isIncreased: boolean | null
+  percent: number
 }
 
 export default function OrderBookItem({
@@ -20,6 +21,7 @@ export default function OrderBookItem({
   type,
   isNew,
   isIncreased,
+  percent,
 }: IOrderBookItemProps) {
   return (
     <div
@@ -57,6 +59,17 @@ export default function OrderBookItem({
         {numberFormatter(size)}
       </span>
       <span className={clsx([styled['order-book-item-cell'], styled['order-book-item-total']])}>
+        <span
+          className={clsx(
+            styled['percent-bar'],
+            type === ORDER_BOOK_TYPE.BIDS
+              ? styled['bids-percent-bar-background-color']
+              : styled['asks-percent-bar-background-color'],
+          )}
+          style={{
+            width: `${percent}%`,
+          }}
+        />
         {numberFormatter(total)}
       </span>
     </div>

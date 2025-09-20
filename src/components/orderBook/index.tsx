@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useOrderBookStore } from '@/store'
 import { formatOrderBook, formatPriceStatus } from '@/utils'
 import OrderBookItem from './OrderBookItem'
@@ -12,11 +12,11 @@ interface IOrderBookProps {
 export interface IPrevOrderPriceMap {
   size: number
   total: number
-  index: number
+  percent: number
 }
 
 export default function OrderBook({ type, maxCount }: IOrderBookProps) {
-  const { state: { orderBook = { asks: [], bids: [] } } = {} } = useOrderBookStore()
+  const { orderBook = { asks: [], bids: [] } } = useOrderBookStore(state => state.state)
 
   const prevOrderPriceMap = useRef<Map<number, IPrevOrderPriceMap> | null>(null)
   const orderBookList = useMemo(() => {
@@ -26,15 +26,21 @@ export default function OrderBook({ type, maxCount }: IOrderBookProps) {
 
   useEffect(() => {
     prevOrderPriceMap.current = new Map(
-      orderBookList.map(({ price, size, total }, index) => [price, { size, total, index }]),
+      orderBookList.map(({ price, size, total, percent }) => [price, { size, total, percent }]),
     )
   }, [orderBookList])
 
   return (
     <>
-      {orderBookList.map(item => (
-        <OrderBookItem key={item.price} type={type} {...item} />
-      ))}
+      {orderBookList.map(item => {
+        return (
+          <OrderBookItem
+            key={item.price}
+            type={type}
+            {...item}
+          />
+        )
+      })}
     </>
   )
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from './style.module.css'
 import clsx from 'clsx'
 
