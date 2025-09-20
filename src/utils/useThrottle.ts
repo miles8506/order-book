@@ -5,33 +5,26 @@ interface IUseThrottleOptions {
 }
 
 export function useThrottle<T>({ intervalMs = 100 }: IUseThrottleOptions = {}) {
-  const [value, setValue] = useState<T>()
+  const [value, setValue] = useState<T | null>(null)
   const latestRef = useRef<T | null>(null)
-  const timerRef = useRef<number | null>(null)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const flush = () => {
-    if (latestRef.current !== null) {
-      setValue(latestRef.current)
-      latestRef.current = null
-    }
-    timerRef.current = null
-  }
-
-  const update = (v: T) => {
-    latestRef.current = v
-    if (timerRef.current == null) {
-      timerRef.current = window.setTimeout(flush, intervalMs)
-    }
+  const update = (value: T) => {
+    latestRef.current = value
   }
 
   useEffect(() => {
-    return () => {
-      if (timerRef.current != null) {
-        clearTimeout(timerRef.current)
-        timerRef.current = null
+    intervalRef.current = setInterval(() => {
+      if (latestRef.current !== null) {
+        setValue(latestRef.current)
+        latestRef.current = null
       }
+    }, intervalMs)
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [])
+  }, [intervalMs])
 
   return { value, update }
 }

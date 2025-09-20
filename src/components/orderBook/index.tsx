@@ -32,8 +32,8 @@ export default function OrderBook({ type, maxCount }: IOrderBookProps) {
 
   return (
     <>
-      {orderBookList.map((item, index) => (
-        <OrderBookItem key={`${item.price}_${index}`} type={type} {...item} />
+      {orderBookList.map(item => (
+        <OrderBookItem key={item.price} type={type} {...item} />
       ))}
     </>
   )

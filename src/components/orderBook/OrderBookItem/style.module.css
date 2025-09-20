@@ -41,7 +41,6 @@
   flex: 1 0 30%;
   color: var(--base-font-color, #fff);
   text-align: right;
-  transition: all .15s ease;
   background-color: transparent;
 }
 
