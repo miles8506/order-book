@@ -1,21 +1,60 @@
 .order-book-item {
   display: flex;
+  padding: 1px 12px;
+  transition: all .1s ease;
 }
 
+.order-book-item:hover {
+  background: var(--btse-quote-row-hover-background-color, #1E3059);
+}
+
+.order-book-item-base-bg {
+  background: transparent;
+}
+
+.order-book-item-bids-new-price {
+  background-color: var(--btse-animation-flash-green-background-color, rgba(0, 177, 93, 0.5));
+}
+
+.order-book-item-asks-new-price {
+  background-color: var(--btse-animation-flash-red-background-color, rgba(255, 91, 90, 0.5));
+}
 
 .order-book-item-cell {
-  color: var(--btse-quote-table-header-text-color, #8698aa);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .order-book-item-price {
   flex: 1 0 29%;
 }
 
+.order-book-item-price-bids {
+  color: var(--btse-buy-quote-price-text-color, #00b15d);
+}
+
+.order-book-item-price-asks {
+  color: var(--btse-sell-quote-price-text-color, #FF5B5A); 
+}
+
 .order-book-item-size {
   flex: 1 0 30%;
+  color: var(--base-font-color, #fff);
+  text-align: right;
+  /* transition: all .1s ease; */
+  background-color: transparent;
+}
+
+.order-book-item-size-increased {
+  background-color: var(--btse-animation-flash-green-background-color, rgba(0, 177, 93, 0.5)); 
+}
+
+.order-book-item-size-decreased {
+  background-color: var(--btse-animation-flash-red-background-color, rgba(255, 91, 90, 0.5));
 }
 
 .order-book-item-total {
   flex: 1 1 41%;
+  color: var(--base-font-color, #fff);
+  text-align: right;
 }

@@ -1,5 +1,6 @@
 .order-book-header {
   display: flex;
+  padding: 5px 12px 1px;
 }
 
 .order-book-header-cell {
@@ -13,8 +14,10 @@
 
 .order-book-header-size {
   flex: 1 0 30%;
+  text-align: right;
 }
 
 .order-book-header-total {
   flex: 1 1 41%;
+  text-align: right;
 }

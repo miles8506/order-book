@@ -7,7 +7,7 @@
 body {
   height: 100vh;
   color: var(--base-font-color, #fff);
-  background: var(--base-background-color, #000);
+  background-color: var(--base-background-color, #000);
 }
 
 #root {

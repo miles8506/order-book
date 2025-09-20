@@ -1,16 +1,19 @@
 .container {
-  width: 350px;
+  width: 280px;
+  padding-bottom: 5px;
+  background-color: var(--bts-background-color, #131B29);
 }
 
 .wrapper {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 8px 5px;
+  cursor: default;
 }
 
 .title {
-  padding: 8px 5px;
+  padding: 8px 12px;
   color: var(--btse-default-text-color, #F0F4F8);
   border-bottom: 1px solid var(--btse-quote-table-header-text-color, #8698aa);
+  font-weight: 500;
 }
