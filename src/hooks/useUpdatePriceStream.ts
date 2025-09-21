@@ -40,7 +40,7 @@ function useUpdatePriceStream() {
       }
 
       startTransition(() => {
-        const isDelta = prevData?.data.type === 'delta'
+        const isDelta = data.type === 'delta'
         orderBook.current = data
 
         const bids = isDelta

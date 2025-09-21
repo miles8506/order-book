@@ -58,7 +58,7 @@ export default function OrderBookItem({
       >
         {numberFormatter(size)}
       </span>
-      <span className={clsx([styled['order-book-item-cell'], styled['order-book-item-total']])}>
+      <div className={clsx([styled['order-book-item-cell'], styled['order-book-item-total']])}>
         <span
           className={clsx(
             styled['percent-bar'],
@@ -71,7 +71,7 @@ export default function OrderBookItem({
           }}
         />
         {numberFormatter(total)}
-      </span>
+      </div>
     </div>
   )
 }
