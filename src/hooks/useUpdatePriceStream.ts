@@ -11,7 +11,7 @@ function useUpdatePriceStream() {
     actions: { setOrderBookState },
   } = useOrderBookStore()
 
-  // TODO
+  // REFACTOR
   // const { value, update } = useThrottle<IUpdatePriceData>({
   //   intervalMs: 25,
   // })
@@ -49,7 +49,7 @@ function useUpdatePriceStream() {
     },
   })
 
-  // TODO
+  // REFACTOR
   // useEffect(() => {
   //   if (isNil(value)) return
   //   startTransition(() => {

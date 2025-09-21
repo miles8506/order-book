@@ -1,5 +1,5 @@
 .container {
-  width: 280px;
+  width: 260px;
   padding-bottom: 5px;
   background-color: var(--bts-background-color, #131B29);
 }
