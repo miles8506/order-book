@@ -1,4 +1,4 @@
-import { type IPrevOrderBookPriceMap } from '@/store'
+import { type IFormatOrderBookState, type IPrevOrderBookPriceMap } from '@/store'
 import { ORDER_BOOK_TYPE } from '@/constants'
 import { isNil } from 'ramda'
 
@@ -40,12 +40,7 @@ function compareSizeChange(oldN: number, newN: number) {
 
 function formatPriceStatus(
   prevOrderPriceMap: Map<number, IPrevOrderBookPriceMap> | null,
-  currOrderPriceList: {
-    price: number
-    size: number
-    total: number
-    percent: number
-  }[],
+  currOrderPriceList: IFormatOrderBookState[],
 ) {
   return isNil(prevOrderPriceMap)
     ? currOrderPriceList.map(item => ({ ...item, isNew: false, isIncreased: null }))

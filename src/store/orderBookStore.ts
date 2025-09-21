@@ -35,7 +35,6 @@ interface IPrevOrderBookPriceMap {
 }
 
 interface IOrderBookActions {
-  setOrderBookState: (data: IOrderBookState) => void
   setFormatOrderBookState: (
     data: {
       bids: Array<[string, string]>
@@ -57,7 +56,6 @@ interface IOrderBookActions {
 
 interface IOrderBookStore {
   state: {
-    orderBook: IOrderBookState
     formatOrderBookState: {
       bids: IFormatOrderBookState[]
       asks: IFormatOrderBookState[]
@@ -76,15 +74,6 @@ interface IOrderBookStore {
 export const useOrderBookStore = create<IOrderBookStore>()(
   immer(set => ({
     state: {
-      orderBook: {
-        bids: [],
-        asks: [],
-        seqNum: null,
-        prevSeqNum: null,
-        type: null,
-        timestamp: null,
-        symbol: null,
-      },
       formatOrderBookState: {
         bids: [],
         asks: [],
@@ -120,11 +109,6 @@ export const useOrderBookStore = create<IOrderBookStore>()(
       },
     },
     actions: {
-      setOrderBookState(data) {
-        set(store => {
-          store.state.orderBook = data
-        })
-      },
       setFormatOrderBookState({ bids, asks }, maxCount) {
         set(store => {
           store.state.formatOrderBookState = {

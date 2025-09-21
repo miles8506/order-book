@@ -1,8 +1,9 @@
 import { useOrderBookStore } from '@/store'
 import { formatPriceStatus } from '@/utils'
 import OrderBookItem from './OrderBookItem'
-import { MAX_COUNT, ORDER_BOOK_TYPE } from '@/constants'
+import { ORDER_BOOK_TYPE } from '@/constants'
 import Skeleton from '../base/Skeleton'
+import { MAX_COUNT } from '@/hooks/useUpdatePriceStream'
 
 interface IOrderBookProps {
   type: ORDER_BOOK_TYPE

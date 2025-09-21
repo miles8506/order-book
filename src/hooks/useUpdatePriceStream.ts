@@ -1,4 +1,4 @@
-import { CONTRACT_SYMBOL, MAX_COUNT, WS_URL } from '@/constants'
+import { CONTRACT_SYMBOL, WS_URL } from '@/constants'
 import { useWebSocket } from './useWebSocket'
 import type { IUpdatePriceRes } from '@/types'
 import { isNotNil } from 'ramda'
@@ -6,14 +6,11 @@ import { updateOrderBookTop } from '@/utils'
 import { useOrderBookStore, type IOrderBookState } from '@/store'
 import { startTransition, useRef } from 'react'
 
+export const MAX_COUNT = 8
+
 function useUpdatePriceStream() {
   const {
-    actions: {
-      setOrderBookState,
-      setPrevOrderBookState,
-      setFormatOrderBookState,
-      setPrevOrderBookPriceMap,
-    },
+    actions: { setPrevOrderBookState, setFormatOrderBookState, setPrevOrderBookPriceMap },
   } = useOrderBookStore()
   const orderBook = useRef<IOrderBookState | null>(null)
   const prevOrderBookTopBids = useRef<Array<[string, string]>>([])
@@ -23,7 +20,6 @@ function useUpdatePriceStream() {
   // const { value, update } = useThrottle<IUpdatePriceData>({
   //   intervalMs: 25,
   // })
-  // const isDelta = useRef(false)
 
   const { subscribe, unsubscribe } = useWebSocket<IUpdatePriceRes>({
     url: WS_URL.UPDATE_PRICE,
@@ -41,34 +37,20 @@ function useUpdatePriceStream() {
 
       startTransition(() => {
         const isDelta = data.type === 'delta'
-        orderBook.current = data
 
         const bids = isDelta
-          ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.bids ?? [], data.bids)
+          ? updateOrderBookTop(orderBook.current?.bids ?? [], data.bids)
           : data.bids
         const asks = isDelta
-          ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.asks, data.asks)
+          ? updateOrderBookTop(orderBook.current?.asks ?? [], data.asks)
           : data.asks
 
-        setOrderBookState({
-          ...data,
-          bids,
-          asks,
-        })
+        orderBook.current = { ...data, bids, asks }
 
-        setFormatOrderBookState(
-          {
-            bids,
-            asks,
-          },
-          MAX_COUNT,
-        )
+        setFormatOrderBookState({ bids, asks }, MAX_COUNT)
 
         setPrevOrderBookPriceMap(
-          {
-            bids: prevOrderBookTopBids.current,
-            asks: prevOrderBookTopAsks.current,
-          },
+          { bids: prevOrderBookTopBids.current, asks: prevOrderBookTopAsks.current },
           MAX_COUNT,
         )
 
@@ -83,8 +65,6 @@ function useUpdatePriceStream() {
         prevOrderBookTopBids.current = bids
         prevOrderBookTopAsks.current = asks
       })
-
-      // update(data)
     },
   })
 
@@ -92,8 +72,6 @@ function useUpdatePriceStream() {
   // useEffect(() => {
   //   if (isNil(value)) return
   //   startTransition(() => {
-  //     console.log('old:', bids)
-  //     console.log('new:', value.bids)
   //     setOrderBookState({
   //       ...value,
   //       bids: isDelta.current ? updateOrderBookTop(bids ?? [], value.bids) : value.bids,
