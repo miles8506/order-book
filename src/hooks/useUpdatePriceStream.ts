@@ -1,21 +1,29 @@
-import { CONTRACT_SYMBOL, WS_URL } from '@/constants'
+import { CONTRACT_SYMBOL, MAX_COUNT, WS_URL } from '@/constants'
 import { useWebSocket } from './useWebSocket'
 import type { IUpdatePriceRes } from '@/types'
-import {  isNotNil } from 'ramda'
+import { isNotNil } from 'ramda'
 import { updateOrderBookTop } from '@/utils'
-import { useOrderBookStore } from '@/store'
+import { useOrderBookStore, type IOrderBookState } from '@/store'
 import { startTransition, useRef } from 'react'
 
 function useUpdatePriceStream() {
   const {
-    actions: { setOrderBookState },
+    actions: {
+      setOrderBookState,
+      setPrevOrderBookState,
+      setFormatOrderBookState,
+      setPrevOrderBookPriceMap,
+    },
   } = useOrderBookStore()
+  const orderBook = useRef<IOrderBookState | null>(null)
+  const prevOrderBookTopBids = useRef<Array<[string, string]>>([])
+  const prevOrderBookTopAsks = useRef<Array<[string, string]>>([])
 
   // REFACTOR
   // const { value, update } = useThrottle<IUpdatePriceData>({
   //   intervalMs: 25,
   // })
-  const isDelta = useRef(false)
+  // const isDelta = useRef(false)
 
   const { subscribe, unsubscribe } = useWebSocket<IUpdatePriceRes>({
     url: WS_URL.UPDATE_PRICE,
@@ -25,24 +33,55 @@ function useUpdatePriceStream() {
       subscribe()
     },
     onmessage({ parseData: { data }, prevData }) {
-      isDelta.current = prevData?.data.type === 'delta'
-
-      if (
-        isNotNil(prevData?.data) &&
-        isDelta.current &&
-        data.prevSeqNum !== prevData?.data.seqNum
-      ) {
+      if (isNotNil(prevData?.data) && data.prevSeqNum !== prevData?.data.seqNum) {
         unsubscribe()
         subscribe()
         return
       }
 
       startTransition(() => {
+        const isDelta = prevData?.data.type === 'delta'
+        orderBook.current = data
+
+        const bids = isDelta
+          ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.bids ?? [], data.bids)
+          : data.bids
+        const asks = isDelta
+          ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.asks, data.asks)
+          : data.asks
+
         setOrderBookState({
           ...data,
-          bids: isDelta.current ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.bids ?? [], data.bids) : data.bids,
-          asks: isDelta ? updateOrderBookTop(useOrderBookStore.getState().state.orderBook.asks, data.asks) : data.asks,
+          bids,
+          asks,
         })
+
+        setFormatOrderBookState(
+          {
+            bids,
+            asks,
+          },
+          MAX_COUNT,
+        )
+
+        setPrevOrderBookPriceMap(
+          {
+            bids: prevOrderBookTopBids.current,
+            asks: prevOrderBookTopAsks.current,
+          },
+          MAX_COUNT,
+        )
+
+        if (isNotNil(prevData?.data)) {
+          setPrevOrderBookState({
+            ...prevData.data,
+            bids: prevOrderBookTopBids.current,
+            asks: prevOrderBookTopAsks.current,
+          })
+        }
+
+        prevOrderBookTopBids.current = bids
+        prevOrderBookTopAsks.current = asks
       })
 
       // update(data)

@@ -1,4 +1,4 @@
-import type { IPrevOrderPriceMap } from '@/components/orderBook'
+import { type IPrevOrderBookPriceMap } from '@/store'
 import { ORDER_BOOK_TYPE } from '@/constants'
 import { isNil } from 'ramda'
 
@@ -14,7 +14,7 @@ function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, m
   const sliceOrderBook =
     type === ORDER_BOOK_TYPE.BIDS ? data.slice(0, maxCount) : data.slice(-maxCount)
 
-  const totals = sliceOrderBook.map(([], index, arr) =>
+  const totals = sliceOrderBook.map((_, index, arr) =>
     type === ORDER_BOOK_TYPE.BIDS
       ? arr.slice(0, index + 1).reduce((prev, [_, size]) => prev + Number(size), 0)
       : arr.slice(index).reduce((prev, [_, size]) => prev + Number(size), 0),
@@ -39,7 +39,7 @@ function compareSizeChange(oldN: number, newN: number) {
 }
 
 function formatPriceStatus(
-  prevOrderPriceMap: Map<number, IPrevOrderPriceMap> | null,
+  prevOrderPriceMap: Map<number, IPrevOrderBookPriceMap> | null,
   currOrderPriceList: {
     price: number
     size: number

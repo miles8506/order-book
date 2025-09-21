@@ -1,1 +1,7 @@
-export { useOrderBookStore, type IOrderBookState, type ILastPriceState } from './orderBookStore'
+export {
+  useOrderBookStore,
+  type IOrderBookState,
+  type IFormatOrderBookState,
+  type ILastPriceState,
+  type IPrevOrderBookPriceMap,
+} from './orderBookStore'

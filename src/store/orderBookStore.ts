@@ -1,8 +1,9 @@
-import type { CONTRACT_SYMBOL } from '@/constants'
+import { ORDER_BOOK_TYPE, type CONTRACT_SYMBOL } from '@/constants'
+import { formatOrderBook } from '@/utils'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-export interface IOrderBookState {
+interface IOrderBookState {
   bids: Array<[string, string]>
   asks: Array<[string, string]>
   seqNum: number | null
@@ -11,8 +12,14 @@ export interface IOrderBookState {
   timestamp: number | null
   symbol: CONTRACT_SYMBOL | null
 }
+interface IFormatOrderBookState {
+  price: number
+  size: number
+  total: number
+  percent: number
+}
 
-export interface ILastPriceState {
+interface ILastPriceState {
   symbol: string | null
   side: 'BUY' | 'SELL' | null
   size: number | null
@@ -21,9 +28,29 @@ export interface ILastPriceState {
   timestamp: number | null
 }
 
+interface IPrevOrderBookPriceMap {
+  size: number
+  total: number
+  percent: number
+}
+
 interface IOrderBookActions {
   setOrderBookState: (data: IOrderBookState) => void
+  setFormatOrderBookState: (
+    data: {
+      bids: Array<[string, string]>
+      asks: Array<[string, string]>
+    },
+    maxCount: number,
+  ) => void
   setPrevOrderBookState: (data: IOrderBookState) => void
+  setPrevOrderBookPriceMap: (
+    data: {
+      bids: Array<[string, string]>
+      asks: Array<[string, string]>
+    },
+    maxCount: number,
+  ) => void
   setLastPriceInfo: (data: ILastPriceState) => void
   setPrevLastPriceInfo: (data: ILastPriceState) => void
 }
@@ -31,7 +58,15 @@ interface IOrderBookActions {
 interface IOrderBookStore {
   state: {
     orderBook: IOrderBookState
-    prevOrderBook: IOrderBookState
+    formatOrderBookState: {
+      bids: IFormatOrderBookState[]
+      asks: IFormatOrderBookState[]
+    }
+    prevOrderBookState: IOrderBookState
+    prevOrderBookPriceMap: {
+      bids: Map<number, IPrevOrderBookPriceMap>
+      asks: Map<number, IPrevOrderBookPriceMap>
+    }
     lastPriceInfo: ILastPriceState
     prevLastPriceInfo: ILastPriceState
   }
@@ -50,7 +85,11 @@ export const useOrderBookStore = create<IOrderBookStore>()(
         timestamp: null,
         symbol: null,
       },
-      prevOrderBook: {
+      formatOrderBookState: {
+        bids: [],
+        asks: [],
+      },
+      prevOrderBookState: {
         bids: [],
         asks: [],
         seqNum: null,
@@ -58,6 +97,10 @@ export const useOrderBookStore = create<IOrderBookStore>()(
         type: null,
         timestamp: null,
         symbol: null,
+      },
+      prevOrderBookPriceMap: {
+        asks: new Map(),
+        bids: new Map(),
       },
       lastPriceInfo: {
         symbol: null,
@@ -82,9 +125,17 @@ export const useOrderBookStore = create<IOrderBookStore>()(
           store.state.orderBook = data
         })
       },
+      setFormatOrderBookState({ bids, asks }, maxCount) {
+        set(store => {
+          store.state.formatOrderBookState = {
+            bids: formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, maxCount),
+            asks: formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, maxCount),
+          }
+        })
+      },
       setPrevOrderBookState(data) {
         set(store => {
-          store.state.orderBook = data
+          store.state.prevOrderBookState = data
         })
       },
       setLastPriceInfo(data) {
@@ -97,6 +148,29 @@ export const useOrderBookStore = create<IOrderBookStore>()(
           store.state.prevLastPriceInfo = data
         })
       },
+      setPrevOrderBookPriceMap({ bids, asks }, maxCount) {
+        set(store => {
+          store.state.prevOrderBookPriceMap = {
+            bids: new Map(
+              formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, maxCount).map(
+                ({ price, size, total, percent }) => [price, { size, total, percent }],
+              ),
+            ),
+            asks: new Map(
+              formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, maxCount).map(
+                ({ price, size, total, percent }) => [price, { size, total, percent }],
+              ),
+            ),
+          }
+        })
+      },
     },
   })),
 )
+
+export {
+  type IOrderBookState,
+  type IFormatOrderBookState,
+  type ILastPriceState,
+  type IPrevOrderBookPriceMap,
+}
