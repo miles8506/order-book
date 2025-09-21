@@ -5,9 +5,10 @@ import { compareSizeChange, numberFormatter } from '@/utils'
 import { isNil } from 'ramda'
 import styled from './style.module.css'
 import clsx from 'clsx'
+import Skeleton from '@/components/base/Skeleton'
 
 export default function LastPriceSection() {
-  const { prevLastPriceInfo: { price: prevPrice } = {}, lastPriceInfo: { price = 0 } = {} } =
+  const { prevLastPriceInfo: { price: prevPrice } = {}, lastPriceInfo: { price } = {} } =
     useOrderBookStore(state => state.state)
 
   const lastPriceClassName = useMemo(() => {
@@ -17,6 +18,10 @@ export default function LastPriceSection() {
     if (isNil(status)) return 'flat'
     return status ? 'increased' : 'decreased'
   }, [price, prevPrice])
+
+  if (isNil(price)) {
+    return <Skeleton style={{ height: '28px' }} />
+  }
 
   return (
     <div className={clsx([styled['last-price-section'], styled[lastPriceClassName]])}>

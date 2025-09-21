@@ -1,0 +1,21 @@
+@keyframes sk-shimmer {
+  0% { 
+    background-position: -200% 0; 
+  }
+  100% {
+    background-position: 200% 0; 
+  }
+}
+
+.skeleton {
+  display: inline-block;
+  /* height: 19.6px; */
+  background: linear-gradient(
+    90deg,
+    rgba(80, 80, 80, 0.25),
+    rgba(120, 120, 120, 0.35),
+    rgba(80, 80, 80, 0.25)
+  );
+  background-size: 400% 100%;
+  animation: sk-shimmer 3.5s ease-in-out infinite;
+}
