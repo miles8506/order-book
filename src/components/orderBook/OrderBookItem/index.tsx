@@ -1,8 +1,7 @@
 import styled from './style.module.css'
 import clsx from 'clsx'
-import { ORDER_BOOK_TYPE } from '@/constants'
+import { DIRECTION, ORDER_BOOK_TYPE } from '@/constants'
 import { numberFormatter } from '@/utils'
-import { isNil } from 'ramda'
 
 interface IOrderBookItemProps {
   total: number
@@ -10,7 +9,7 @@ interface IOrderBookItemProps {
   size: number
   type: ORDER_BOOK_TYPE
   isNew: boolean
-  isIncreased: boolean | null
+  direction: DIRECTION
   percent: number
 }
 
@@ -20,7 +19,7 @@ export default function OrderBookItem({
   size,
   type,
   isNew,
-  isIncreased,
+  direction,
   percent,
 }: IOrderBookItemProps) {
   return (
@@ -49,11 +48,8 @@ export default function OrderBookItem({
         className={clsx([
           styled['order-book-item-cell'],
           styled['order-book-item-size'],
-          isNil(isIncreased)
-            ? ''
-            : isIncreased
-              ? styled['order-book-item-size-increased']
-              : styled['order-book-item-size-decreased'],
+          direction === DIRECTION.INCREASED && styled['order-book-item-size-increased'],
+          direction === DIRECTION.DECREASED && styled['order-book-item-size-decreased'],
         ])}
       >
         {numberFormatter(size)}

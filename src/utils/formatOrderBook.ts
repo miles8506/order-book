@@ -1,6 +1,7 @@
 import { type IFormatOrderBookState, type IPrevOrderBookPriceMap } from '@/store'
-import { ORDER_BOOK_TYPE } from '@/constants'
+import { DIRECTION, ORDER_BOOK_TYPE } from '@/constants'
 import { isNil } from 'ramda'
+import { getSizeChangeDirection } from './getSizeChangeDirection'
 
 function updateOrderBookTop(prevData: Array<[string, string]>, currData: Array<[string, string]>) {
   const map = new Map([...prevData, ...currData])
@@ -32,30 +33,24 @@ function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, m
   })
 }
 
-function compareSizeChange(oldN: number, newN: number) {
-  if (newN > oldN) return true
-  if (newN < oldN) return false
-  return null
-}
-
 function formatPriceStatus(
   prevOrderPriceMap: Map<number, IPrevOrderBookPriceMap> | null,
   currOrderPriceList: IFormatOrderBookState[],
 ) {
   return isNil(prevOrderPriceMap)
-    ? currOrderPriceList.map(item => ({ ...item, isNew: false, isIncreased: null }))
+    ? currOrderPriceList.map(item => ({ ...item, isNew: false, direction: DIRECTION.FLAT }))
     : currOrderPriceList.map(item => {
         const isNew = !prevOrderPriceMap.has(item.price)
-        const isIncreased = isNew
-          ? null
-          : compareSizeChange(prevOrderPriceMap.get(item.price)!.size, item.size)
+        const direction = isNew
+          ? DIRECTION.FLAT
+          : getSizeChangeDirection(prevOrderPriceMap.get(item.price)!.size, item.size)
 
         return {
           ...item,
           isNew,
-          isIncreased,
+          direction,
         }
       })
 }
 
-export { updateOrderBookTop, formatOrderBook, formatPriceStatus, compareSizeChange }
+export { updateOrderBookTop, formatOrderBook, formatPriceStatus }

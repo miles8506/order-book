@@ -1,9 +1,5 @@
 export { stringify, parse } from './jsonUtils'
 export { useThrottle } from './useThrottle'
-export {
-  updateOrderBookTop,
-  formatOrderBook,
-  formatPriceStatus,
-  compareSizeChange,
-} from './formatOrderBook'
+export { updateOrderBookTop, formatOrderBook, formatPriceStatus } from './formatOrderBook'
 export { numberFormatter } from './numberFormatter'
+export { getSizeChangeDirection } from './getSizeChangeDirection'
