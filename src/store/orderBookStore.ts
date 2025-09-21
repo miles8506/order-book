@@ -23,13 +23,17 @@ export interface ILastPriceState {
 
 interface IOrderBookActions {
   setOrderBookState: (data: IOrderBookState) => void
+  setPrevOrderBookState: (data: IOrderBookState) => void
   setLastPriceInfo: (data: ILastPriceState) => void
+  setPrevLastPriceInfo: (data: ILastPriceState) => void
 }
 
 interface IOrderBookStore {
   state: {
     orderBook: IOrderBookState
+    prevOrderBook: IOrderBookState
     lastPriceInfo: ILastPriceState
+    prevLastPriceInfo: ILastPriceState
   }
   actions: IOrderBookActions
 }
@@ -46,7 +50,24 @@ export const useOrderBookStore = create<IOrderBookStore>()(
         timestamp: null,
         symbol: null,
       },
+      prevOrderBook: {
+        bids: [],
+        asks: [],
+        seqNum: null,
+        prevSeqNum: null,
+        type: null,
+        timestamp: null,
+        symbol: null,
+      },
       lastPriceInfo: {
+        symbol: null,
+        side: null,
+        size: null,
+        price: null,
+        tradeId: null,
+        timestamp: null,
+      },
+      prevLastPriceInfo: {
         symbol: null,
         side: null,
         size: null,
@@ -61,9 +82,19 @@ export const useOrderBookStore = create<IOrderBookStore>()(
           store.state.orderBook = data
         })
       },
+      setPrevOrderBookState(data) {
+        set(store => {
+          store.state.orderBook = data
+        })
+      },
       setLastPriceInfo(data) {
         set(store => {
           store.state.lastPriceInfo = data
+        })
+      },
+      setPrevLastPriceInfo(data) {
+        set(store => {
+          store.state.prevLastPriceInfo = data
         })
       },
     },

@@ -6,17 +6,24 @@ import type { ILastPriceRes } from '@/types'
 
 function useLastPriceStream() {
   const {
-    actions: { setLastPriceInfo },
+    actions: { setLastPriceInfo, setPrevLastPriceInfo },
   } = useOrderBookStore()
 
   const { subscribe } = useWebSocket<ILastPriceRes>({
     url: WS_URL.LAST_PRICE,
     args: [`tradeHistoryApi:${CONTRACT_SYMBOL.BTCPFC}`],
+    cachePrevData: true,
     onopen() {
       subscribe()
     },
-    onmessage({ parseData: { data: lastPriceData } }) {
-      isNotNil(lastPriceData) && setLastPriceInfo(lastPriceData[0])
+    onmessage({ parseData: { data }, prevData }) {
+      if (isNotNil(data)) {
+        setLastPriceInfo(data[0])
+      }
+
+      if (isNotNil(prevData?.data)) {
+        setPrevLastPriceInfo(prevData.data[0])
+      }
     },
   })
 }

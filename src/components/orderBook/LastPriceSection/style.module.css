@@ -1,0 +1,40 @@
+.last-price-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+}
+
+.last-price {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.flat {
+  color: var(--btse-default-text-color, #F0F4F8);
+  background-color: rgba(134, 152, 170, 0.12);
+}
+
+.increased {
+  color: var(--btse-buy-quote-price-text-color, #00b15d);
+  background-color: var(--btse-buy-quote-accumulative-total-size-bar-color, rgba(16, 186, 104, 0.12));
+}
+
+.decreased {
+  color: var(--btse-sell-quote-price-text-color, #FF5B5A);
+  background-color: var(--btse-animation-flash-red-background-color, rgba(255, 91, 90, 0.5));
+}
+
+.flat-icon {
+  visibility: hidden;
+}
+
+.increased-icon {
+  visibility: visible;
+  transform: rotate(180deg);
+}
+
+.decreased-icon {
+  visibility: visible;
+}

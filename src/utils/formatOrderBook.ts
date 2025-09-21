@@ -10,10 +10,6 @@ function updateOrderBookTop(prevData: Array<[string, string]>, currData: Array<[
     .sort((a, b) => Number(b[0]) - Number(a[0]))
 }
 
-function calculateTotal(data: Array<[string, string]>) {
-  return data.reduce((prev, [_, size]) => prev + Number(size), 0)
-}
-
 function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, maxCount: number) {
   const sliceOrderBook =
     type === ORDER_BOOK_TYPE.BIDS ? data.slice(0, maxCount) : data.slice(-maxCount)
@@ -25,7 +21,7 @@ function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, m
   )
   const maxTotal = Math.max(...totals)
 
-  return sliceOrderBook.map(([price, size], index, arr) => {
+  return sliceOrderBook.map(([price, size], index) => {
     const total = totals[index]
     return {
       price: Number(price),
@@ -36,9 +32,9 @@ function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, m
   })
 }
 
-function compareSizeChange(oldSize: number, newSize: number) {
-  if (newSize > oldSize) return true
-  if (newSize < oldSize) return false
+function compareSizeChange(oldN: number, newN: number) {
+  if (newN > oldN) return true
+  if (newN < oldN) return false
   return null
 }
 
@@ -67,4 +63,4 @@ function formatPriceStatus(
       })
 }
 
-export { updateOrderBookTop, calculateTotal, formatOrderBook, formatPriceStatus }
+export { updateOrderBookTop, formatOrderBook, formatPriceStatus, compareSizeChange }

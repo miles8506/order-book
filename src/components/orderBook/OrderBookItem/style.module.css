@@ -61,10 +61,11 @@
 
 .percent-bar {
   position: absolute;
-  top: 2px;
-  bottom: 2px;
+  top: 0px;
+  bottom: 0px;
   right: 0px;
   z-index: 2;
+  transition: all .2s ease;
 }
 
 .bids-percent-bar-background-color {

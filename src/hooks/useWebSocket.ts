@@ -5,8 +5,9 @@ interface IWebSocket<T> {
   url: string
   args: string[]
   cachePrevData?: boolean
-  onopen: () => void
-  onmessage: (payload: { ev: MessageEvent; parseData: T; prevData?: T | null }) => void
+  onopen?: () => void
+  onmessage?: (payload: { ev: MessageEvent; parseData: T; prevData?: T | null }) => void
+  onerror?: (ev: Event) => void
 }
 
 export function useWebSocket<T>({
@@ -15,6 +16,7 @@ export function useWebSocket<T>({
   cachePrevData = false,
   onopen,
   onmessage,
+  onerror,
 }: IWebSocket<T>) {
   const socket = useRef<WebSocket | null>(null)
   const prevData = useRef<T | null>(null)
@@ -29,18 +31,19 @@ export function useWebSocket<T>({
 
   useEffect(() => {
     socket.current = new WebSocket(url)
-    socket.current.onopen = () => onopen()
+    socket.current.onopen = () => onopen?.()
     socket.current.onmessage = (ev: MessageEvent) => {
       const parseData = parse<T>(ev.data)
 
       // TODO
       if ((parseData as unknown as any).event === 'subscribe') return
 
-      onmessage({ ev, parseData, ...(cachePrevData ? { prevData: prevData.current } : {}) })
+      onmessage?.({ ev, parseData, ...(cachePrevData ? { prevData: prevData.current } : {}) })
       prevData.current = cachePrevData ? parseData : null
     }
     socket.current.onerror = ev => {
       console.error(ev)
+      onerror?.(ev)
     }
 
     return () => {
