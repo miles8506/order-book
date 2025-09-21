@@ -16,7 +16,7 @@ export default function OrderBook({ type }: IOrderBookProps) {
   if (orderBookList.length === 0) {
     return Array(MAX_COUNT)
       .fill(null)
-      .map(() => <Skeleton style={{ height: '19.6px' }} />)
+      .map(() => <Skeleton style={{ height: '20px' }} />)
   }
 
   return (

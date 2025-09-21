@@ -10,6 +10,11 @@ interface IWebSocket<T> {
   onerror?: (ev: Event) => void
 }
 
+// check if response object has an event key
+function hasEventKey(obj: unknown): obj is { event: string } {
+  return typeof obj === 'object' && obj !== null && 'event' in obj
+}
+
 export function useWebSocket<T>({
   url,
   args,
@@ -35,8 +40,7 @@ export function useWebSocket<T>({
     socket.current.onmessage = (ev: MessageEvent) => {
       const parseData = parse<T>(ev.data)
 
-      // TODO
-      if ((parseData as unknown as any).event === 'subscribe') return
+      if (hasEventKey(parseData) && parseData.event === 'subscribe') return
 
       onmessage?.({ ev, parseData, ...(cachePrevData ? { prevData: prevData.current } : {}) })
       prevData.current = cachePrevData ? parseData : null
