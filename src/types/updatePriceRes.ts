@@ -1,21 +1,18 @@
-import type { CONTRACT_SYMBOL } from "@/constants"
+import type { CONTRACT_SYMBOL } from '@/constants'
 
 interface IUpdatePriceData {
-  bids: Array<[string, string]> // [price, amount]
-  asks: Array<[string, string]> // [price, amount]
+  bids: Array<[string, string]>
+  asks: Array<[string, string]>
   seqNum: number
   prevSeqNum: number
-  type: 'snapshot' | 'delta' // 根據常見 orderbook event 類型
-  timestamp: number // unix ms
-  symbol: CONTRACT_SYMBOL // e.g. "BTCPFC"
+  type: 'snapshot' | 'delta'
+  timestamp: number
+  symbol: CONTRACT_SYMBOL
 }
 
 interface IUpdatePriceRes {
-  topic: string // e.g. "update:BTCPFC_0"
+  topic: string
   data: IUpdatePriceData
 }
 
-export {
-  type IUpdatePriceRes,
-  type IUpdatePriceData
-}
+export { type IUpdatePriceRes, type IUpdatePriceData }
