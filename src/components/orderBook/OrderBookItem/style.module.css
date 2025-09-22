@@ -1,7 +1,7 @@
 .order-book-item {
   display: flex;
   padding: 1px 12px;
-  transition: all .05s ease;
+  /* transition: all .05s ease; */
 }
 
 .order-book-item:hover {

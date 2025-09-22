@@ -1,5 +1,4 @@
-import { ORDER_BOOK_TYPE, type CONTRACT_SYMBOL } from '@/constants'
-import { formatOrderBook } from '@/utils'
+import { type CONTRACT_SYMBOL } from '@/constants'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -35,20 +34,11 @@ interface IPrevOrderBookPriceMap {
 }
 
 interface IOrderBookActions {
-  setOrderBookTopState: (
-    data: {
-      bids: Array<[string, string]>
-      asks: Array<[string, string]>
-    },
-    maxCount: number,
-  ) => void
-  setPrevOrderBookPriceMap: (
-    data: {
-      bids: Array<[string, string]>
-      asks: Array<[string, string]>
-    },
-    maxCount: number,
-  ) => void
+  setOrderBookTopState: (data: { bids: IOrderBookTopState[]; asks: IOrderBookTopState[] }) => void
+  setPrevOrderBookPriceMap: (data: {
+    bids: IOrderBookTopState[]
+    asks: IOrderBookTopState[]
+  }) => void
   setLastPriceInfo: (data: ILastPriceState) => void
   setPrevLastPriceInfo: (data: ILastPriceState) => void
 }
@@ -59,7 +49,6 @@ interface IOrderBookStore {
       bids: IOrderBookTopState[]
       asks: IOrderBookTopState[]
     }
-    // prevOrderBookState: IOrderBookState
     prevOrderBookPriceMap: {
       bids: Map<number, IPrevOrderBookPriceMap>
       asks: Map<number, IPrevOrderBookPriceMap>
@@ -99,12 +88,9 @@ export const useOrderBookStore = create<IOrderBookStore>()(
       },
     },
     actions: {
-      setOrderBookTopState({ bids, asks }, maxCount) {
+      setOrderBookTopState(data) {
         set(store => {
-          store.state.orderBookTopState = {
-            bids: formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, maxCount),
-            asks: formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, maxCount),
-          }
+          store.state.orderBookTopState = data
         })
       },
       setLastPriceInfo(data) {
@@ -117,18 +103,14 @@ export const useOrderBookStore = create<IOrderBookStore>()(
           store.state.prevLastPriceInfo = data
         })
       },
-      setPrevOrderBookPriceMap({ bids, asks }, maxCount) {
+      setPrevOrderBookPriceMap({ bids, asks }) {
         set(store => {
           store.state.prevOrderBookPriceMap = {
             bids: new Map(
-              formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, maxCount).map(
-                ({ price, size, total, percent }) => [price, { size, total, percent }],
-              ),
+              bids.map(({ price, size, total, percent }) => [price, { size, total, percent }]),
             ),
             asks: new Map(
-              formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, maxCount).map(
-                ({ price, size, total, percent }) => [price, { size, total, percent }],
-              ),
+              asks.map(({ price, size, total, percent }) => [price, { size, total, percent }]),
             ),
           }
         })

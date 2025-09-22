@@ -1,8 +1,8 @@
-import { CONTRACT_SYMBOL, WS_URL } from '@/constants'
+import { CONTRACT_SYMBOL, ORDER_BOOK_TYPE, WS_URL } from '@/constants'
 import { useWebSocket } from './useWebSocket'
 import type { IUpdatePriceRes } from '@/types'
 import { isNotNil } from 'ramda'
-import { updateOrderBookTop } from '@/utils'
+import { formatOrderBook, updateOrderBookTop } from '@/utils'
 import { useOrderBookStore } from '@/store'
 import { startTransition, useRef } from 'react'
 
@@ -44,12 +44,15 @@ function useUpdatePriceStream() {
           ? updateOrderBookTop(prevOrderBookTopAsks.current, data.asks)
           : data.asks
 
-        setOrderBookTopState({ bids, asks }, MAX_COUNT)
+        setOrderBookTopState({
+          bids: formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, MAX_COUNT),
+          asks: formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, MAX_COUNT),
+        })
 
-        setPrevOrderBookPriceMap(
-          { bids: prevOrderBookTopBids.current, asks: prevOrderBookTopAsks.current },
-          MAX_COUNT,
-        )
+        setPrevOrderBookPriceMap({
+          bids: formatOrderBook(prevOrderBookTopBids.current, ORDER_BOOK_TYPE.BIDS, MAX_COUNT),
+          asks: formatOrderBook(prevOrderBookTopAsks.current, ORDER_BOOK_TYPE.ASKS, MAX_COUNT),
+        })
 
         prevOrderBookTopBids.current = bids
         prevOrderBookTopAsks.current = asks
