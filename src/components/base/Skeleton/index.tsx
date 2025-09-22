@@ -7,7 +7,5 @@ interface ISkeletonProps {
 }
 
 export default function Skeleton({ style }: ISkeletonProps) {
-  return (
-    <div className={clsx([styled['skeleton'], styled['sk-line'], styled['sm']])} style={style} />
-  )
+  return <div className={clsx([styled['skeleton']])} style={style} />
 }

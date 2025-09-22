@@ -25,7 +25,7 @@ export default function LastPriceSection() {
   return (
     <div className={clsx([styled['last-price-section'], styled[directionClassName]])}>
       <div className={styled['last-price']}>
-        {numberFormatter(price ?? 0, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+        {numberFormatter(price, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
       </div>
       <ArrowIcon width={15} height={15} className={clsx([styled[`${directionClassName}-icon`]])} />
     </div>
