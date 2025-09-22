@@ -15,11 +15,6 @@ function useUpdatePriceStream() {
   const prevOrderBookTopBids = useRef<Array<[string, string]>>([])
   const prevOrderBookTopAsks = useRef<Array<[string, string]>>([])
 
-  // REFACTOR
-  // const { value, update } = useThrottle<IUpdatePriceData>({
-  //   intervalMs: 25,
-  // })
-
   const { subscribe, unsubscribe } = useWebSocket<IUpdatePriceRes>({
     url: WS_URL.UPDATE_PRICE,
     args: [`update:${CONTRACT_SYMBOL.BTCPFC}_0`],
@@ -59,20 +54,6 @@ function useUpdatePriceStream() {
       })
     },
   })
-
-  // REFACTOR
-  // useEffect(() => {
-  //   if (isNil(value)) return
-  //   startTransition(() => {
-  //     setOrderBookState({
-  //       ...value,
-  //       bids: isDelta.current ? updateOrderBookTop(bids ?? [], value.bids) : value.bids,
-  //       asks: isDelta
-  //         ? updateOrderBookTop(asks ?? [], value.asks)
-  //         : value.asks,
-  //     })
-  //   })
-  // }, [value])
 }
 
 export { useUpdatePriceStream }
