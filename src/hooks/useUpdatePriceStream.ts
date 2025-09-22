@@ -3,7 +3,7 @@ import { useWebSocket } from './useWebSocket'
 import type { IUpdatePriceRes } from '@/types'
 import { isNotNil } from 'ramda'
 import { updateOrderBookTop } from '@/utils'
-import { useOrderBookStore, type IOrderBookState } from '@/store'
+import { useOrderBookStore } from '@/store'
 import { startTransition, useRef } from 'react'
 
 export const MAX_COUNT = 8
@@ -12,7 +12,6 @@ function useUpdatePriceStream() {
   const {
     actions: { setPrevOrderBookState, setFormatOrderBookState, setPrevOrderBookPriceMap },
   } = useOrderBookStore()
-  const orderBook = useRef<IOrderBookState | null>(null)
   const prevOrderBookTopBids = useRef<Array<[string, string]>>([])
   const prevOrderBookTopAsks = useRef<Array<[string, string]>>([])
 
@@ -39,13 +38,11 @@ function useUpdatePriceStream() {
         const isDelta = data.type === 'delta'
 
         const bids = isDelta
-          ? updateOrderBookTop(orderBook.current?.bids ?? [], data.bids)
+          ? updateOrderBookTop(prevOrderBookTopBids.current, data.bids)
           : data.bids
         const asks = isDelta
-          ? updateOrderBookTop(orderBook.current?.asks ?? [], data.asks)
+          ? updateOrderBookTop(prevOrderBookTopAsks.current, data.asks)
           : data.asks
-
-        orderBook.current = { ...data, bids, asks }
 
         setFormatOrderBookState({ bids, asks }, MAX_COUNT)
 

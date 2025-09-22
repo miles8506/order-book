@@ -21,8 +21,8 @@ export default function OrderBook({ type }: IOrderBookProps) {
 
   return (
     <>
-      {orderBookList.map(item => {
-        return <OrderBookItem key={item.price} type={type} {...item} />
+      {orderBookList.map((item, index) => {
+        return <OrderBookItem key={index} type={type} {...item} />
       })}
     </>
   )
