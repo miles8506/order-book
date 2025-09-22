@@ -1,5 +1,4 @@
-# Project Name
-BTSE Order Book
+# BTSE Order Book
 
 ## 🌐 Environment
 - Node.js: 22.12
