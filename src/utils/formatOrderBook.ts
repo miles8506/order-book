@@ -1,4 +1,4 @@
-import { type IFormatOrderBookState, type IPrevOrderBookPriceMap } from '@/store'
+import { type IOrderBookTopState, type IPrevOrderBookPriceMap } from '@/store'
 import { DIRECTION, ORDER_BOOK_TYPE } from '@/constants'
 import { isNil } from 'ramda'
 import { getSizeChangeDirection } from './getSizeChangeDirection'
@@ -35,11 +35,11 @@ function formatOrderBook(data: Array<[string, string]>, type: ORDER_BOOK_TYPE, m
 
 function formatPriceStatus(
   prevOrderPriceMap: Map<number, IPrevOrderBookPriceMap> | null,
-  currOrderPriceList: IFormatOrderBookState[],
+  currOrderBookList: IOrderBookTopState[],
 ) {
   return isNil(prevOrderPriceMap)
-    ? currOrderPriceList.map(item => ({ ...item, isNew: false, direction: DIRECTION.FLAT }))
-    : currOrderPriceList.map(item => {
+    ? currOrderBookList.map(item => ({ ...item, isNew: false, direction: DIRECTION.FLAT }))
+    : currOrderBookList.map(item => {
         const isNew = !prevOrderPriceMap.has(item.price)
         const direction = isNew
           ? DIRECTION.FLAT

@@ -10,8 +10,8 @@ interface IOrderBookProps {
 }
 
 export default function OrderBook({ type }: IOrderBookProps) {
-  const { prevOrderBookPriceMap, formatOrderBookState } = useOrderBookStore(state => state.state)
-  const orderBookList = formatPriceStatus(prevOrderBookPriceMap[type], formatOrderBookState[type])
+  const { prevOrderBookPriceMap, orderBookTopState } = useOrderBookStore(state => state.state)
+  const orderBookList = formatPriceStatus(prevOrderBookPriceMap[type], orderBookTopState[type])
 
   if (orderBookList.length === 0) {
     return Array(MAX_COUNT)

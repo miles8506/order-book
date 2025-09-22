@@ -1,7 +1,7 @@
 .order-book-item {
   display: flex;
   padding: 1px 12px;
-  transition: all .25s ease;
+  transition: all .05s ease;
 }
 
 .order-book-item:hover {
@@ -65,7 +65,7 @@
   bottom: 0px;
   right: 0px;
   z-index: 2;
-  transition: all .2s ease;
+  transition: all .05s ease;
 }
 
 .bids-percent-bar-background-color {

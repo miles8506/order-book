@@ -12,7 +12,7 @@ interface IOrderBookState {
   timestamp: number | null
   symbol: CONTRACT_SYMBOL | null
 }
-interface IFormatOrderBookState {
+interface IOrderBookTopState {
   price: number
   size: number
   total: number
@@ -35,14 +35,13 @@ interface IPrevOrderBookPriceMap {
 }
 
 interface IOrderBookActions {
-  setFormatOrderBookState: (
+  setOrderBookTopState: (
     data: {
       bids: Array<[string, string]>
       asks: Array<[string, string]>
     },
     maxCount: number,
   ) => void
-  setPrevOrderBookState: (data: IOrderBookState) => void
   setPrevOrderBookPriceMap: (
     data: {
       bids: Array<[string, string]>
@@ -56,11 +55,11 @@ interface IOrderBookActions {
 
 interface IOrderBookStore {
   state: {
-    formatOrderBookState: {
-      bids: IFormatOrderBookState[]
-      asks: IFormatOrderBookState[]
+    orderBookTopState: {
+      bids: IOrderBookTopState[]
+      asks: IOrderBookTopState[]
     }
-    prevOrderBookState: IOrderBookState
+    // prevOrderBookState: IOrderBookState
     prevOrderBookPriceMap: {
       bids: Map<number, IPrevOrderBookPriceMap>
       asks: Map<number, IPrevOrderBookPriceMap>
@@ -74,18 +73,9 @@ interface IOrderBookStore {
 export const useOrderBookStore = create<IOrderBookStore>()(
   immer(set => ({
     state: {
-      formatOrderBookState: {
+      orderBookTopState: {
         bids: [],
         asks: [],
-      },
-      prevOrderBookState: {
-        bids: [],
-        asks: [],
-        seqNum: null,
-        prevSeqNum: null,
-        type: null,
-        timestamp: null,
-        symbol: null,
       },
       prevOrderBookPriceMap: {
         asks: new Map(),
@@ -109,17 +99,12 @@ export const useOrderBookStore = create<IOrderBookStore>()(
       },
     },
     actions: {
-      setFormatOrderBookState({ bids, asks }, maxCount) {
+      setOrderBookTopState({ bids, asks }, maxCount) {
         set(store => {
-          store.state.formatOrderBookState = {
+          store.state.orderBookTopState = {
             bids: formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, maxCount),
             asks: formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, maxCount),
           }
-        })
-      },
-      setPrevOrderBookState(data) {
-        set(store => {
-          store.state.prevOrderBookState = data
         })
       },
       setLastPriceInfo(data) {
@@ -154,7 +139,7 @@ export const useOrderBookStore = create<IOrderBookStore>()(
 
 export {
   type IOrderBookState,
-  type IFormatOrderBookState,
+  type IOrderBookTopState,
   type ILastPriceState,
   type IPrevOrderBookPriceMap,
 }

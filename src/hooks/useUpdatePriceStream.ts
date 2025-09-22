@@ -10,7 +10,7 @@ export const MAX_COUNT = 8
 
 function useUpdatePriceStream() {
   const {
-    actions: { setPrevOrderBookState, setFormatOrderBookState, setPrevOrderBookPriceMap },
+    actions: { setOrderBookTopState, setPrevOrderBookPriceMap },
   } = useOrderBookStore()
   const prevOrderBookTopBids = useRef<Array<[string, string]>>([])
   const prevOrderBookTopAsks = useRef<Array<[string, string]>>([])
@@ -44,20 +44,12 @@ function useUpdatePriceStream() {
           ? updateOrderBookTop(prevOrderBookTopAsks.current, data.asks)
           : data.asks
 
-        setFormatOrderBookState({ bids, asks }, MAX_COUNT)
+        setOrderBookTopState({ bids, asks }, MAX_COUNT)
 
         setPrevOrderBookPriceMap(
           { bids: prevOrderBookTopBids.current, asks: prevOrderBookTopAsks.current },
           MAX_COUNT,
         )
-
-        if (isNotNil(prevData?.data)) {
-          setPrevOrderBookState({
-            ...prevData.data,
-            bids: prevOrderBookTopBids.current,
-            asks: prevOrderBookTopAsks.current,
-          })
-        }
 
         prevOrderBookTopBids.current = bids
         prevOrderBookTopAsks.current = asks
