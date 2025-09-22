@@ -12,17 +12,20 @@
 }
 
 .flat {
-  color: var(--btse-default-text-color, #F0F4F8);
+  color: var(--btse-default-text-color, #f0f4f8);
   background-color: rgba(134, 152, 170, 0.12);
 }
 
 .increased {
   color: var(--btse-buy-quote-price-text-color, #00b15d);
-  background-color: var(--btse-buy-quote-accumulative-total-size-bar-color, rgba(16, 186, 104, 0.12));
+  background-color: var(
+    --btse-buy-quote-accumulative-total-size-bar-color,
+    rgba(16, 186, 104, 0.12)
+  );
 }
 
 .decreased {
-  color: var(--btse-sell-quote-price-text-color, #FF5B5A);
+  color: var(--btse-sell-quote-price-text-color, #ff5b5a);
   background-color: var(--btse-animation-flash-red-background-color, rgba(255, 91, 90, 0.5));
 }
 

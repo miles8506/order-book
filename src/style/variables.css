@@ -2,12 +2,12 @@
   --base-font-color: #fff;
   --base-background-color: #000;
 
-  --bts-background-color: #131B29;
-  --btse-default-text-color: #F0F4F8;
+  --bts-background-color: #131b29;
+  --btse-default-text-color: #f0f4f8;
   --btse-quote-table-header-text-color: #8698aa;
   --btse-buy-quote-price-text-color: #00b15d;
-  --btse-sell-quote-price-text-color: #FF5B5A;
-  --btse-quote-row-hover-background-color: #1E3059;
+  --btse-sell-quote-price-text-color: #ff5b5a;
+  --btse-quote-row-hover-background-color: #1e3059;
   --btse-buy-quote-accumulative-total-size-bar-color: rgba(16, 186, 104, 0.12);
   --btse-sell-quote-accumulative-total-size-bar-color: rgba(255, 90, 90, 0.12);
   --btse-animation-flash-green-background-color: rgba(0, 177, 93, 0.5);

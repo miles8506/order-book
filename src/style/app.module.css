@@ -1,7 +1,7 @@
 .container {
   width: 260px;
   padding-bottom: 5px;
-  background-color: var(--bts-background-color, #131B29);
+  background-color: var(--bts-background-color, #131b29);
 }
 
 .wrapper {
@@ -13,7 +13,7 @@
 
 .title {
   padding: 8px 12px;
-  color: var(--btse-default-text-color, #F0F4F8);
+  color: var(--btse-default-text-color, #f0f4f8);
   border-bottom: 1px solid var(--btse-quote-table-header-text-color, #8698aa);
   font-weight: 500;
 }
