@@ -39,6 +39,7 @@
 
 .order-book-item-size {
   flex: 1 0 30%;
+  padding-right: 5px;
   color: var(--base-font-color, #fff);
   text-align: right;
   background-color: transparent;
