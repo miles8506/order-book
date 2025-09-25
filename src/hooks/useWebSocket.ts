@@ -8,6 +8,7 @@ interface IWebSocket<T> {
   onopen?: () => void
   onmessage?: (payload: { ev: MessageEvent; parseData: T; prevData?: T | null }) => void
   onerror?: (ev: Event) => void
+  onclose?: (ev: Event) => void
 }
 
 // check if response object has an event key
@@ -22,21 +23,16 @@ export function useWebSocket<T>({
   onopen,
   onmessage,
   onerror,
+  onclose,
 }: IWebSocket<T>) {
   const socket = useRef<WebSocket | null>(null)
   const prevData = useRef<T | null>(null)
 
-  const subscribe = () => {
-    socket.current?.send(stringify({ op: 'subscribe', args }))
-  }
-
-  const unsubscribe = () => {
-    socket.current?.send(stringify({ op: 'unsubscribe', args }))
-  }
-
-  useEffect(() => {
+  const initWebSocket = () => {
     socket.current = new WebSocket(url)
-    socket.current.onopen = () => onopen?.()
+    socket.current.onopen = () => {
+      onopen?.()
+    }
     socket.current.onmessage = (ev: MessageEvent) => {
       const parseData = parse<T>(ev.data)
 
@@ -49,15 +45,46 @@ export function useWebSocket<T>({
       console.error(ev)
       onerror?.(ev)
     }
+    socket.current.onclose = ev => {
+      onclose?.(ev)
+    }
+  }
+
+  const subscribe = () => {
+    socket.current?.send(stringify({ op: 'subscribe', args }))
+  }
+
+  const unsubscribe = () => {
+    socket.current?.send(stringify({ op: 'unsubscribe', args }))
+  }
+
+  const closeWebSocket = () => {
+    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+      unsubscribe()
+      socket.current.close()
+    } else {
+      socket.current?.close()
+    }
+  }
+
+  const reconnect = () => {
+    closeWebSocket()
+    initWebSocket()
+  }
+
+  useEffect(() => {
+    initWebSocket()
 
     return () => {
-      unsubscribe()
+      closeWebSocket()
     }
-  }, [])
+  }, [url])
 
   return {
     socket,
     subscribe,
     unsubscribe,
+    closeWebSocket,
+    reconnect,
   }
 }
