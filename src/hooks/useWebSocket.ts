@@ -17,6 +17,9 @@ function hasEventKey(obj: unknown): obj is { event: string } {
   return typeof obj === 'object' && obj !== null && 'event' in obj
 }
 
+const SEND_PING_TIMER = 10_000
+const CHECK_PONG_TIMER = 5_000
+
 export function useWebSocket<T>({
   url,
   args,
@@ -28,14 +31,62 @@ export function useWebSocket<T>({
 }: IWebSocket<T>) {
   const socket = useRef<WebSocket | null>(null)
   const prevData = useRef<T | null>(null)
+  const pingTimer = useRef<NodeJS.Timeout | null>(null)
+  const pongTimer = useRef<NodeJS.Timeout | null>(null)
+
+  const clearPingTimer = () => {
+    if (pingTimer.current) {
+      clearTimeout(pingTimer.current)
+      pingTimer.current = null
+    }
+  }
+
+  const clearPongTimer = () => {
+    if (pongTimer.current) {
+      clearTimeout(pongTimer.current)
+      pongTimer.current = null
+    }
+  }
+
+  const sendPing = () => {
+    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+      socket.current.send(PING_PONG_TYPE.PING)
+    }
+  }
+
+  // start a timer, if no pong is received within CHECK_PONG_TIMER, trigger reconnect
+  const startPongTimeout = () => {
+    clearPongTimer()
+    pongTimer.current = setTimeout(() => {
+      console.log('reconnect');
+      reconnect()
+    }, CHECK_PONG_TIMER)
+  }
+
+  const checkPingPongLoop = () => {
+    clearPingTimer()
+
+    pingTimer.current = setTimeout(() => {
+      sendPing()
+      startPongTimeout()
+      checkPingPongLoop()
+    }, SEND_PING_TIMER)
+  }
 
   const initWebSocket = () => {
     socket.current = new WebSocket(url)
     socket.current.onopen = () => {
-      socket.current?.send(PING_PONG_TYPE.PING)
+      sendPing()
+      startPongTimeout()
+      checkPingPongLoop()
       onopen?.()
     }
     socket.current.onmessage = (ev: MessageEvent) => {
+      if (ev.data === PING_PONG_TYPE.PONG) {
+        clearPongTimer()
+        return
+      }
+
       const parseData = parse<T>(ev.data)
 
       if (hasEventKey(parseData) && parseData.event === 'subscribe') return
@@ -48,6 +99,8 @@ export function useWebSocket<T>({
       onerror?.(ev)
     }
     socket.current.onclose = ev => {
+      clearPingTimer()
+      clearPongTimer()
       onclose?.(ev)
     }
   }
@@ -81,7 +134,6 @@ export function useWebSocket<T>({
   }
 
   return {
-    socket,
     initWebSocket,
     subscribe,
     unsubscribe,
