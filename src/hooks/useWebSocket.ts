@@ -58,7 +58,6 @@ export function useWebSocket<T>({
   const startPongTimeout = () => {
     clearPongTimer()
     pongTimer.current = setTimeout(() => {
-      console.log('reconnect');
       reconnect()
     }, CHECK_PONG_TIMER)
   }
