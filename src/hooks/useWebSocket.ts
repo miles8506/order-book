@@ -1,5 +1,6 @@
+import { PING_PONG_TYPE } from '@/constants'
 import { parse, stringify } from '@/utils'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
 interface IWebSocket<T> {
   url: string
@@ -31,6 +32,7 @@ export function useWebSocket<T>({
   const initWebSocket = () => {
     socket.current = new WebSocket(url)
     socket.current.onopen = () => {
+      socket.current?.send(PING_PONG_TYPE.PING)
       onopen?.()
     }
     socket.current.onmessage = (ev: MessageEvent) => {
@@ -59,32 +61,32 @@ export function useWebSocket<T>({
   }
 
   const closeWebSocket = () => {
-    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-      unsubscribe()
+    if (
+      socket.current &&
+      (socket.current.readyState === WebSocket.OPEN ||
+        socket.current.readyState === WebSocket.CONNECTING)
+    ) {
       socket.current.close()
-    } else {
-      socket.current?.close()
     }
   }
 
   const reconnect = () => {
+    unsubscribe()
     closeWebSocket()
     initWebSocket()
   }
 
-  useEffect(() => {
-    initWebSocket()
-
-    return () => {
-      closeWebSocket()
-    }
-  }, [url])
+  const clearPrevData = () => {
+    prevData.current = null
+  }
 
   return {
     socket,
+    initWebSocket,
     subscribe,
     unsubscribe,
     closeWebSocket,
     reconnect,
+    clearPrevData,
   }
 }

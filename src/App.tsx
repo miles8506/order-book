@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import OrderBook from './components/orderBook'
 import LastPriceSection from './components/orderBook/LastPriceSection'
 import OrderBookHeader from './components/orderBook/OrderBookHeader'
@@ -6,8 +7,38 @@ import { useLastPriceStream, useUpdatePriceStream } from './hooks'
 import styled from '@/style/app.module.css'
 
 function App() {
-  useUpdatePriceStream()
-  useLastPriceStream()
+  const {
+    initWebSocket: initPriceStream,
+    clearPrevData: clearPricePrevData,
+    unsubscribe: unsubscribePriceStream,
+    closeWebSocket: closePriceStream,
+  } = useUpdatePriceStream()
+  const {
+    initWebSocket: initLastPriceStream,
+    clearPrevData: clearLastPriceData,
+    unsubscribe: unsubscribeLastPrice,
+    closeWebSocket: closeLastPriceStream,
+  } = useLastPriceStream()
+
+  useEffect(() => {
+    initPriceStream()
+
+    return () => {
+      clearPricePrevData()
+      unsubscribePriceStream()
+      closePriceStream()
+    }
+  }, [])
+
+  useEffect(() => {
+    initLastPriceStream()
+
+    return () => {
+      clearLastPriceData()
+      unsubscribeLastPrice()
+      closeLastPriceStream()
+    }
+  }, [])
 
   return (
     <div className={styled.container}>

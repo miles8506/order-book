@@ -15,45 +15,54 @@ function useUpdatePriceStream() {
   const prevOrderBookTopBids = useRef<Array<[string, string]>>([])
   const prevOrderBookTopAsks = useRef<Array<[string, string]>>([])
 
-  const { subscribe, unsubscribe } = useWebSocket<IUpdatePriceRes>({
-    url: WS_URL.UPDATE_PRICE,
-    args: [`update:${CONTRACT_SYMBOL.BTCPFC}_0`],
-    cachePrevData: true,
-    onopen() {
-      subscribe()
-    },
-    onmessage({ parseData: { data }, prevData }) {
-      const isDelta = data.type === 'delta'
-
-      if (isDelta && isNotNil(prevData?.data) && data.prevSeqNum !== prevData.data.seqNum) {
-        unsubscribe()
+  const { subscribe, unsubscribe, clearPrevData, initWebSocket, closeWebSocket } =
+    useWebSocket<IUpdatePriceRes>({
+      url: WS_URL.UPDATE_PRICE,
+      args: [`update:${CONTRACT_SYMBOL.BTCPFC}_0`],
+      cachePrevData: true,
+      onopen() {
         subscribe()
-        return
-      }
+      },
+      onmessage({ parseData: { data }, prevData }) {
+        if (isNotNil(prevData?.data) && data.prevSeqNum !== prevData.data.seqNum) {
+          clearPrevData()
+          unsubscribe()
+          subscribe()
+          return
+        }
 
-      startTransition(() => {
-        const bids = isDelta
-          ? updateOrderBookTop(prevOrderBookTopBids.current, data.bids)
-          : data.bids
-        const asks = isDelta
-          ? updateOrderBookTop(prevOrderBookTopAsks.current, data.asks)
-          : data.asks
+        startTransition(() => {
+          const isDelta = data.type === 'delta'
+          const bids = isDelta
+            ? updateOrderBookTop(prevOrderBookTopBids.current, data.bids)
+            : data.bids
+          const asks = isDelta
+            ? updateOrderBookTop(prevOrderBookTopAsks.current, data.asks)
+            : data.asks
 
-        setOrderBookTopState({
-          bids: formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, MAX_COUNT),
-          asks: formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, MAX_COUNT),
+          setOrderBookTopState({
+            bids: formatOrderBook(bids, ORDER_BOOK_TYPE.BIDS, MAX_COUNT),
+            asks: formatOrderBook(asks, ORDER_BOOK_TYPE.ASKS, MAX_COUNT),
+          })
+
+          setPrevOrderBookPriceMap({
+            bids: formatOrderBook(prevOrderBookTopBids.current, ORDER_BOOK_TYPE.BIDS, MAX_COUNT),
+            asks: formatOrderBook(prevOrderBookTopAsks.current, ORDER_BOOK_TYPE.ASKS, MAX_COUNT),
+          })
+
+          prevOrderBookTopBids.current = bids
+          prevOrderBookTopAsks.current = asks
         })
+      },
+    })
 
-        setPrevOrderBookPriceMap({
-          bids: formatOrderBook(prevOrderBookTopBids.current, ORDER_BOOK_TYPE.BIDS, MAX_COUNT),
-          asks: formatOrderBook(prevOrderBookTopAsks.current, ORDER_BOOK_TYPE.ASKS, MAX_COUNT),
-        })
-
-        prevOrderBookTopBids.current = bids
-        prevOrderBookTopAsks.current = asks
-      })
-    },
-  })
+  return {
+    initWebSocket,
+    subscribe,
+    unsubscribe,
+    clearPrevData,
+    closeWebSocket,
+  }
 }
 
 export { useUpdatePriceStream }

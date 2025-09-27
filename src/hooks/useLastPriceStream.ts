@@ -9,23 +9,32 @@ function useLastPriceStream() {
     actions: { setLastPriceInfo, setPrevLastPriceInfo },
   } = useOrderBookStore()
 
-  const { subscribe } = useWebSocket<ILastPriceRes>({
-    url: WS_URL.LAST_PRICE,
-    args: [`tradeHistoryApi:${CONTRACT_SYMBOL.BTCPFC}`],
-    cachePrevData: true,
-    onopen() {
-      subscribe()
-    },
-    onmessage({ parseData: { data }, prevData }) {
-      if (isNotNil(data)) {
-        setLastPriceInfo(data[0])
-      }
+  const { subscribe, unsubscribe, clearPrevData, initWebSocket, closeWebSocket } =
+    useWebSocket<ILastPriceRes>({
+      url: WS_URL.LAST_PRICE,
+      args: [`tradeHistoryApi:${CONTRACT_SYMBOL.BTCPFC}`],
+      cachePrevData: true,
+      onopen() {
+        subscribe()
+      },
+      onmessage({ parseData: { data }, prevData }) {
+        if (isNotNil(data)) {
+          setLastPriceInfo(data[0])
+        }
 
-      if (isNotNil(prevData?.data)) {
-        setPrevLastPriceInfo(prevData.data[0])
-      }
-    },
-  })
+        if (isNotNil(prevData?.data)) {
+          setPrevLastPriceInfo(prevData.data[0])
+        }
+      },
+    })
+
+  return {
+    initWebSocket,
+    subscribe,
+    unsubscribe,
+    clearPrevData,
+    closeWebSocket,
+  }
 }
 
 export { useLastPriceStream }
