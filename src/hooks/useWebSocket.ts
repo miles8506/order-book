@@ -75,6 +75,8 @@ export function useWebSocket<T>({
   const initWebSocket = () => {
     socket.current = new WebSocket(url)
     socket.current.onopen = () => {
+      // clear prev data when reconnect
+      clearPrevData()
       sendPing()
       startPongTimeout()
       checkPingPongLoop()
@@ -95,6 +97,8 @@ export function useWebSocket<T>({
     }
     socket.current.onerror = ev => {
       console.error(ev)
+      clearPingTimer()
+      clearPongTimer()
       onerror?.(ev)
     }
     socket.current.onclose = ev => {
