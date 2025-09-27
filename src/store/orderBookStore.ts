@@ -50,8 +50,8 @@ interface IOrderBookStore {
       asks: IOrderBookTopState[]
     }
     prevOrderBookPriceMap: {
-      bids: Map<number, IPrevOrderBookPriceMap>
-      asks: Map<number, IPrevOrderBookPriceMap>
+      bids: Map<number, IPrevOrderBookPriceMap> | null
+      asks: Map<number, IPrevOrderBookPriceMap> | null
     }
     lastPriceInfo: ILastPriceState
     prevLastPriceInfo: ILastPriceState
@@ -67,8 +67,8 @@ export const useOrderBookStore = create<IOrderBookStore>()(
         asks: [],
       },
       prevOrderBookPriceMap: {
-        asks: new Map(),
-        bids: new Map(),
+        asks: null,
+        bids: null,
       },
       lastPriceInfo: {
         symbol: null,
@@ -106,12 +106,24 @@ export const useOrderBookStore = create<IOrderBookStore>()(
       setPrevOrderBookPriceMap({ bids, asks }) {
         set(store => {
           store.state.prevOrderBookPriceMap = {
-            bids: new Map(
-              bids.map(({ price, size, total, percent }) => [price, { size, total, percent }]),
-            ),
-            asks: new Map(
-              asks.map(({ price, size, total, percent }) => [price, { size, total, percent }]),
-            ),
+            bids:
+              bids.length > 0
+                ? new Map(
+                    bids.map(({ price, size, total, percent }) => [
+                      price,
+                      { size, total, percent },
+                    ]),
+                  )
+                : null,
+            asks:
+              asks.length > 0
+                ? new Map(
+                    asks.map(({ price, size, total, percent }) => [
+                      price,
+                      { size, total, percent },
+                    ]),
+                  )
+                : null,
           }
         })
       },

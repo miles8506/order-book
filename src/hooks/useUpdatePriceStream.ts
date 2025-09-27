@@ -23,15 +23,15 @@ function useUpdatePriceStream() {
       subscribe()
     },
     onmessage({ parseData: { data }, prevData }) {
-      if (isNotNil(prevData?.data) && data.prevSeqNum !== prevData?.data.seqNum) {
+      const isDelta = data.type === 'delta'
+
+      if (isDelta && isNotNil(prevData?.data) && data.prevSeqNum !== prevData.data.seqNum) {
         unsubscribe()
         subscribe()
         return
       }
 
       startTransition(() => {
-        const isDelta = data.type === 'delta'
-
         const bids = isDelta
           ? updateOrderBookTop(prevOrderBookTopBids.current, data.bids)
           : data.bids
